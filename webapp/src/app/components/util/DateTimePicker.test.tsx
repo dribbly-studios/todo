@@ -21,5 +21,5 @@ describe('DateTimePicker component', () => {
     fireEvent.change(screen.getByLabelText(/Select Date and Time/i), { target: { value: newDateTime } });
 
     expect(onChangeMock).toHaveBeenCalledWith(newDateTime);
-})
+  });
 });
