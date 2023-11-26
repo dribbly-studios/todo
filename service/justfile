@@ -1,3 +1,5 @@
+srv_dir := justfile_directory() / "service/"
+
 _:
     @just --list
 fmt:
@@ -5,6 +7,7 @@ fmt:
 check:
 	nix flake check
 run:
-    cargo run
+    cargo run --manifest-path {{srv_dir}}/Cargo.toml
 watch:
-    cargo watch -x "run"
+    cargo watch -C {{srv_dir}} -x "run"
+
