@@ -10,9 +10,6 @@
     "test": "jest --watch",
     "test:coverage": "jest --coverage"
   },
-  "jest":{
-    "testEnvironment": "jsdom"
-  },
   "dependencies": {
     "next": "14.0.3",
     "react": "^18",
