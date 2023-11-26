@@ -5,7 +5,7 @@
   outputs = inputs: with inputs;
     let
       pkgs = import nixpkgs { system = "x86_64-linux"; };
-      cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+      cargoToml = builtins.fromTOML (builtins.readFile service/Cargo.toml);
       system = "x86_64-linux";
 
       eachSystem = f: nixpkgs.lib.genAttrs [ system ] (system: f nixpkgs.legacyPackages.${system});
@@ -17,16 +17,6 @@
       });
     in
     {
-      builds = {
-        api = pkgs.rustPlatform.buildRustPackage {
-          inherit (cargoToml.package) name version;
-          src = ./.;
-          cargoLock.lockFile = ./Cargo.lock;
-        };
-
-        app = null;
-      };
-
       images = {
         api = pkgs.dockerTools.buildLayeredImage {
           name = cargoToml.package.name;
@@ -59,7 +49,13 @@
       };
 
       packages.${system} = rec {
-        inherit (self.builds) api app;
+        api = pkgs.rustPlatform.buildRustPackage {
+          inherit (cargoToml.package) name version;
+          src = ./.;
+          cargoLock.lockFile = service/Cargo.lock;
+        };
+        app = { };
+
         default = api;
       };
     };
