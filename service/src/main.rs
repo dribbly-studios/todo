@@ -1,31 +1,37 @@
-use poem::{listener::TcpListener, Route, Server};
-use poem_openapi::{payload::PlainText, OpenApi, OpenApiService};
+use std::time::{SystemTime, UNIX_EPOCH};
 
-struct Api;
+use poem::{listener::TcpListener, Server};
+use poem_grpc::{Request, Response, RouteGrpc, Status};
 
-#[OpenApi]
-impl Api {
-    #[oai(path = "/ping", method = "get")]
-    async fn index(&self) -> PlainText<String> {
-        PlainText("pong".to_string())
+poem_grpc::include_proto!("todo");
+
+struct TaskHandler;
+
+#[poem::async_trait]
+impl TaskService for TaskHandler {
+    async fn get_tasks(
+        &self,
+        _request: Request<GetTasksRequest>,
+    ) -> Result<Response<GetTasksResponse>, Status> {
+            let task= Task {
+            id: "id".to_string(),
+            title: "title".to_string(),
+            description: "description".to_string(),
+            is_completed: false,
+            due_date: match SystemTime::now().duration_since(UNIX_EPOCH) {
+                Ok(now) => now.as_secs().try_into().unwrap(),
+                Err(_) => panic!(),
+            },
+        };
+        let reply = GetTasksResponse { tasks: vec![task] };
+        Ok(Response::new(reply))
     }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
+    let route = RouteGrpc::new().add_service(TaskServiceServer::new(TaskHandler));
     Server::new(TcpListener::bind("0.0.0.0:3000"))
-        .run(
-            Route::new()
-                .nest(
-                    "/api",
-                    OpenApiService::new(Api, "Ping", "1.0").server("http://localhost:3000/api"),
-                )
-                .nest(
-                    "/",
-                    OpenApiService::new(Api, "Ping", "1.0")
-                        .server("http://localhost:3000/api")
-                        .swagger_ui(),
-                ),
-        )
+        .run(route)
         .await
 }
