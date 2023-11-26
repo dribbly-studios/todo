@@ -44,7 +44,17 @@
           export RUST_SRC_PATH=${pkgs.rustPlatform.rustLibSrc}
           just
         '';
-        buildInputs = [ pkgs.libiconv pkgs.rustc pkgs.cargo pkgs.cargo-watch pkgs.just pkgs.rust-analyzer pkgs.rustPlatform.rustcSrc ];
+        buildInputs = [
+			pkgs.libiconv
+			pkgs.rustc
+			pkgs.cargo
+			pkgs.cargo-watch
+			pkgs.just
+			pkgs.rust-analyzer
+			pkgs.rustPlatform.rustcSrc
+			pkgs.protobuf
+			pkgs.grpcurl
+		];
         RUST_BACKTRACE = 1;
       };
 

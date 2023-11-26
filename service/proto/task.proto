@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package todo;
+
+service TaskService {
+  // rpc CreateTask (CreateTaskRequest) returns (CreateTaskResponse);
+  rpc GetTasks (GetTasksRequest) returns (GetTasksResponse);
+  // rpc UpdateTask (UpdateTaskRequest) returns (UpdateTaskResponse);
+  // rpc DeleteTask (DeleteTaskRequest) returns (DeleteTaskResponse);
+}
+
+message Task {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  bool is_completed = 4;
+  int64 due_date = 5;
+}
+
+// message CreateTaskRequest {
+//   string title = 1;
+//   string description = 2;
+//   int64 due_date = 3; // Unix epoch time
+// }
+
+// message CreateTaskResponse {
+//   Task task = 1;
+// }
+
+message GetTasksRequest {
+  bool include_completed = 1;
+}
+
+message GetTasksResponse {
+  repeated Task tasks = 1;
+}
+
+// message UpdateTaskRequest {
+//   Task task = 1;
+// }
+
+// message UpdateTaskResponse {
+//   Task task = 1;
+// }
+
+// message DeleteTaskRequest {
+//   string id = 1;
+// }
+
+// message DeleteTaskResponse {
+//   bool success = 1;
+// }
